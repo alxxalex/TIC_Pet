@@ -1,5 +1,6 @@
 .DS_Store
 node_modules
+front/client/node_modules
 /dist
 backend/dbconfig/tictest-f37a7-firebase-adminsdk-vwm7x-b179d1e5e9.json
 
