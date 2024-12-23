@@ -73,6 +73,7 @@ export default {
 
         const response = await fetch(baseUrl + '/users', {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           },

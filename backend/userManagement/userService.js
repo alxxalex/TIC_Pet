@@ -1,9 +1,6 @@
 const { log } = require('console')
 const db = require('../dbconfig/dbInit')
-
-const getAllUsers = (req, res) => {
-    res.send(db.collection("users").get())
-} 
+const jwt = require('jsonwebtoken');
 
 const registerUser = async (req, res) => {
     const { email, password } = req.body
@@ -12,9 +9,6 @@ const registerUser = async (req, res) => {
         password: password
     }
     try {
-        console.log('aa');
-        console.log(isEmailUsed(email));
-
         if(! await isEmailUsed(email)){
             const addedUser = await db.collection('users').add(newUser)
 
@@ -23,6 +17,16 @@ const registerUser = async (req, res) => {
 
             console.log('New user ID:', addedUser.id)
             console.log('New user data:', userData)
+
+            const token = jwt.sign(
+                { email: email},
+                'alex',
+                { expiresIn: '24h' }
+            );
+    
+            res.cookie('jwtToken', token, {
+                httpOnly: true,
+            });
 
             res.status(201).json({
                 id: addedUser.id,
@@ -59,6 +63,15 @@ const loginUser = async (req, res) => {
     });
 
     if (auth) {
+        const token = jwt.sign(
+            { email: email},
+            'alex',
+            { expiresIn: '24h' }
+        );
+
+        res.cookie('jwtToken', token, {
+            httpOnly: true,
+        });
         res.status(200).send({ email: email})
     } else {
         res.status(401).send({ email: email})
@@ -80,7 +93,6 @@ const isEmailUsed = async (email) => {
   }
 
 module.exports = {
-    getAllUsers,
     registerUser,
     loginUser,
 }

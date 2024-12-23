@@ -74,6 +74,7 @@ export default {
 
         const response = await fetch(baseUrl + '/login', {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           },
