@@ -1,21 +1,22 @@
 <template>
   <div class="login-page">
-    <LoginForm />
+    <SignupForm/>
   </div>
+  
 </template>
 
 <script>
 
-import LoginForm from "../components/LoginForm.vue"
+import SignupForm from "../components/SignupForm.vue"
 
-export default ({
-  name: 'LoginPage',
+export default {
+  name: 'SignupPage',
 
   components: {
-    LoginForm,
+    SignupForm,
   },
-});
-</script>
+ }
+ </script>
 
 <style scoped>
 .login-page {
@@ -25,6 +26,7 @@ export default ({
   height: 100vh;           
   background-color: #f5f5f5; 
   padding: 0;              
-  margin: 0;              
+  margin: 0;               
 }
+
 </style>

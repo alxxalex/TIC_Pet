@@ -7,7 +7,6 @@ const getAllUsers = (req, res) => {
 
 const registerUser = async (req, res) => {
     const { email, password } = req.body
-
     const newUser = {
         email: email,
         password: password
@@ -21,7 +20,7 @@ const registerUser = async (req, res) => {
 
             const userDoc = await addedUser.get()
             const userData = userDoc.data()
-            
+
             console.log('New user ID:', addedUser.id)
             console.log('New user data:', userData)
 
@@ -30,7 +29,9 @@ const registerUser = async (req, res) => {
                 ...userData
             })
         }else{
-            res.status(400).send("Email is already used");
+            res.status(400).send({
+                errors: [{ msg: "Email is already used"}]
+            });
         }
     } catch(error) {
         res.status(500).send(JSON.stringify(error))
@@ -58,9 +59,9 @@ const loginUser = async (req, res) => {
     });
 
     if (auth) {
-        res.status(200).send('sampleToken')
+        res.status(200).send({ email: email})
     } else {
-        res.status(401).send('Unauthorized')
+        res.status(401).send({ email: email})
     }
 }
 

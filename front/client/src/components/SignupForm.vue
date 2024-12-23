@@ -1,7 +1,16 @@
 <template>
-  <v-sheet class="login-container" width="400" max-width="100%"  elevation="5" rounded>
+  <v-sheet class="login-container" width="400" max-width="100%" elevation="5" rounded>
     <v-form @submit.prevent="submitForm" class="login-form">
-      <h2>Login</h2>
+      <v-row class="mb-4 back-row" justify="center" align="center" >
+        <!-- Back Button with Arrow -->
+        <router-link to="/" class="back-button">
+          <btn class="back-circle" elevation="1" rounded>
+            <i class="fa-solid fa-left-long"></i>
+          </btn>
+        </router-link>
+        <h2>Sign up</h2>
+      </v-row>
+
       <!-- <v-img src="your-logo-path.png" alt="Logo" class="logo" contain></v-img> -->
 
       <v-text-field
@@ -25,8 +34,8 @@
         dense
         class="input-field"
       ></v-text-field>
-      
-      <div
+
+        <div
         v-if="errorMessage"
         type="error"
         class="mt-4 error-alert"
@@ -35,32 +44,22 @@
         {{ errorMessage }}
       </div>
 
-      <v-btn
-        type="submit"
-        color="primary"
-        class="btn-submit"
-      >
-        Login
+      <v-btn type="submit" color="primary" class="btn-submit" block>
+        Sign up
       </v-btn>
-
-      <div class="signupMessage">
-          <span>Don’t have an account?</span> 
-          <span class="sign-up-link"> <router-link to="/signup"> Sign Up </router-link></span> 
-      </div>
-
     </v-form>
   </v-sheet>
 </template>
 
 <script>
 export default {
-  name:"LoginForm",
+  name:"SignupForm",
   data: () => ({
     email: '',
     password: '',
     errorMessage: ''
-  }), 
-  methods: {
+  }),
+    methods: {
     async submitForm() {
       console.log('Email:', this.email);
       console.log('Password:', this.password);
@@ -72,7 +71,7 @@ export default {
 
         const baseUrl = 'http://localhost:3000'
 
-        const response = await fetch(baseUrl + '/login', {
+        const response = await fetch(baseUrl + '/users', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -82,26 +81,53 @@ export default {
         const data = await response.json();
 
         if (response.ok) {
-          console.log('Login successful!', data);
+          console.log('Signup successful!', data);
           this.$router.push('/home');
-        }else if(response.status == 401){
-          this.errorMessage = "Incorrect credentials";
-        } else {
-          console.error('Login failed:', data.errors[0].msg);
-          this.errorMessage = data.errors && data.errors[0]?.msg || 'Login failed. Please try again.';
+        }else {
+          console.error('Signup failed:', data.errors[0].msg);
+          this.errorMessage = data.errors && data.errors[0]?.msg || 'Signup failed. Please try again.';
         }
       } catch (error) {
-        console.error('Error during login:', error);
+        console.error('Error during Signup:', error);
       }
     },
     required (v) {
         return !!v || 'Field is required'
     }
-  },
-};
-</script>
+  }, 
+ }
+ </script>
 
 <style scoped>
+.back-row {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.back-button {
+  margin-right: 30%;
+  text-decoration: none;
+}
+
+.back-circle {
+  background-color: #3f8cff;
+  color: white;
+  width: 40px;
+  height: 40px;
+  min-width: 40px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.back-circle:hover {
+  background-color: white;
+  color: #3f8cff;
+  border: 1px solid #3f8cff;
+}
+
 .login-container {
   max-width: 400px;
   padding: 24px;
@@ -118,7 +144,6 @@ export default {
 
 .input-field {
   margin-bottom: 10px;
-  
 }
 
 .btn-submit {
@@ -133,7 +158,6 @@ export default {
 
 .btn-submit:hover {
   background-color: #3579e3;
-  cursor: pointer;
 }
 
 .v-img {
@@ -146,31 +170,18 @@ export default {
 .v-btn {
   font-size: 14px;
   padding: 6px 0;
+  cursor: pointer;
 }
 
 h2 {
   text-align: center;
   font-size: 24px;
-  color: #3f8cff; 
+  color: #3f8cff;
   margin-bottom: 20px;
 }
 
-.mt-6 { 
-  margin-top: 22px !important; 
-}
-
-.sign-up-link {
-  font-weight: bold;
-  cursor: pointer;
-  color: #3f8cff;
-}
-
-.sign-up-link:hover {
-  text-decoration: underline;
-}
-
-.signupMessage{
-  padding-top: 20px;
+.mt-6 {
+  margin-top: 22px !important;
 }
 
 .error-alert {
