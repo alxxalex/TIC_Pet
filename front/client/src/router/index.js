@@ -26,6 +26,11 @@ const routes = [
     path: "/aboutus",
     name: 'AboutusPage',
     component: () => import('../views/AboutusPage.vue')
+  },
+  {
+    path: "/addAnimal",
+    name: 'AddAnimalPage',
+    component: () => import('../views/AddAnimalPage.vue')
   }
 ]
 

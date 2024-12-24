@@ -1,16 +1,26 @@
 <template>
   <div class="gallery-container">
     <NavBar />
-    <div class="gallery-header">
-      <h1 class="gallery-title">Adoptable Animals</h1>
-      <router-link to="/add-animal" class="add-animal-button">Add New Animal</router-link>
-    </div>
-    <div class="gallery-grid">
-      <div v-for="animal in animals" :key="animal.id" class="animal-card">
-        <img src="../assets/dog.jpeg" :alt="animal.name" class="animal-image" />
-        <h2 class="animal-name">{{ animal.name }}</h2>
-        <p class="animal-description">{{ animal.description }}</p>
-        <button class="adopt-button" @click="adoptAnimal(animal.id)">Adopt</button>
+    <div v-if="animals.length > 0" >
+      <div class="gallery-header">
+        <h1 class="gallery-title">Adoptable Animals</h1>
+        <router-link to="/addAnimal" class="add-animal-button"
+          >Add New Animal</router-link
+        >
+      </div>
+      <div class="gallery-grid">
+        <div v-for="animal in animals" :key="animal.id" class="animal-card">
+          <img
+            src="../assets/dog.jpeg"
+            :alt="animal.name"
+            class="animal-image"
+          />
+          <h2 class="animal-name">{{ animal.name }}</h2>
+          <p class="animal-description">{{ animal.description }}</p>
+          <button class="adopt-button" @click="adoptAnimal(animal.id)">
+            Adopt
+          </button>
+        </div>
       </div>
     </div>
     <FooterSection />
@@ -29,7 +39,7 @@ export default {
   },
   data() {
     return {
-      animals: [] 
+      animals: [],
     };
   },
   mounted() {
@@ -38,25 +48,24 @@ export default {
   methods: {
     async fetchAnimals() {
       try {
-        const response = await fetch("http://localhost:3000/animal",{
-            method: 'GET',
-            credentials: 'include',
-        }); 
+        const response = await fetch("http://localhost:3000/animal", {
+          method: "GET",
+          credentials: "include",
+        });
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        const data = await response.json(); 
-        this.animals = data; 
+        const data = await response.json();
+        this.animals = data;
       } catch (error) {
-        console.error("Error fetching animals:", error); 
+        console.error("Error fetching animals:", error);
       }
     },
     adoptAnimal(animalId) {
       console.log(`Adopt animal with ID: ${animalId}`);
-    }
-  }
+    },
+  },
 };
-
 </script>
 
 <style scoped>
@@ -104,7 +113,7 @@ export default {
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); 
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   padding: 20px 10%;
 }
@@ -160,5 +169,4 @@ export default {
 .adopt-button:hover {
   background-color: #2c66c0;
 }
-
 </style>
