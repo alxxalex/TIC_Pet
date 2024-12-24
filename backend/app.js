@@ -6,6 +6,7 @@ const cors = require('cors');
 const port = 3000;
 const logSlowRequests= require('./middleware/logSlowRequests');
 const userRouter = require('./userManagement/userRouter');
+const animalRouter = require('./animalManagement/animalRouter');
 const cookieParser = require('cookie-parser');
 
 app.use(httpLogger('dev'));
@@ -18,6 +19,7 @@ app.use(express.json())
 app.use(logSlowRequests(100));
 app.use(cookieParser());
 app.use(userRouter);
+app.use(animalRouter);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`)
