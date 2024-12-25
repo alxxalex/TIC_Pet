@@ -1,17 +1,17 @@
 <template>
   <div class="gallery-container">
     <NavBar />
-    <div v-if="animals.length > 0" >
       <div class="gallery-header">
         <h1 class="gallery-title">Adoptable Animals</h1>
         <router-link to="/addAnimal" class="add-animal-button"
           >Add New Animal</router-link
         >
       </div>
+    <div v-if="animals.length > 0" >
       <div class="gallery-grid">
         <div v-for="animal in animals" :key="animal.id" class="animal-card">
           <img
-            src="../assets/dog.jpeg"
+            :src= "animal.image"
             :alt="animal.name"
             class="animal-image"
           />
@@ -57,6 +57,7 @@ export default {
         }
         const data = await response.json();
         this.animals = data;
+        console.log(this.animals);
       } catch (error) {
         console.error("Error fetching animals:", error);
       }

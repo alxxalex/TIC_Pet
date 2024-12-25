@@ -1,5 +1,5 @@
 const { log } = require('console')
-const db = require('../dbconfig/dbInit')
+const {db} = require('../dbconfig/dbInit')
 const jwt = require('jsonwebtoken');
 
 const registerUser = async (req, res) => {

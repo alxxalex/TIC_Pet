@@ -3,8 +3,11 @@ const router = express.Router();
 const animalService = require('./animalService')
 const { validate } = require('../middleware/validate')
 const { validateToken } = require('../middleware/validateToken')
+const multer = require("multer");
+const upload = multer({ storage: multer.memoryStorage() });
 
 router.post('/animal',validateToken, validate, animalService.addAnimal);
 router.get('/animal',validateToken, validate, animalService.getAnimals);
+router.post('/animal/image',upload.single("image"),validateToken,animalService.uploadAnimalImage);
 
 module.exports = router

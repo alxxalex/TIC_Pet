@@ -1,5 +1,5 @@
-const db = require('../dbconfig/dbInit');
-
+const {db,storage} = require('../dbconfig/dbInit');
+const { v4: uuidv4 } = require("uuid");
 
 const getAnimals = async (req, res) => {
   try {
@@ -46,7 +46,41 @@ const addAnimal = async (req, res) => {
   }
 };
 
+const uploadAnimalImage = async (req, res) => {
+    const file = req.file; 
+  
+    if (!file) {
+      return res.status(400).json({ message: "No file uploaded." });
+    }
+  
+    try {
+      const fileName = `images/${uuidv4()}-${file.originalname}`;
+      const fileRef = storage.file(fileName);
+  
+      await fileRef.save(file.buffer, {
+        metadata: {
+          contentType: file.mimetype,
+        },
+      });
+  
+      const expiresInDays = 7;
+      const expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + expiresInDays);
+  
+      const [url] = await fileRef.getSignedUrl({
+        action: "read",
+        expires: expirationDate.toISOString(),
+      });
+  
+      return res.status(200).json({ imageUrl: url });
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      return res.status(500).json({ message: "Error uploading image." });
+    }
+  };
+
 module.exports = {
   getAnimals,
   addAnimal,
+  uploadAnimalImage
 };

@@ -4,7 +4,6 @@
     <div class="form-container">
       <h1 class="form-title">Add New Animal</h1>
       <form @submit.prevent="submitForm" class="animal-form">
-        <!-- Name Field -->
         <div class="form-group">
           <label for="name" class="form-label">Name</label>
           <input
@@ -17,41 +16,34 @@
           />
         </div>
 
-        <!-- Type Field -->
         <div class="form-group">
           <label for="type" class="form-label">Type</label>
-          <select
-            id="type"
-            v-model="animal.type"
-            class="form-input"
-            required
-          >
+          <select id="type" v-model="animal.type" class="form-input" required>
             <option value="" disabled selected>Select animal type</option>
             <option value="Dog">Dog</option>
             <option value="Cat">Cat</option>
             <option value="Parrot">Parrot</option>
             <option value="Rabbit">Rabbit</option>
-            <option value="Other">Other</option>
           </select>
         </div>
 
-        <!-- Image Field -->
         <div class="form-group">
-          <label for="image" class="form-label">Image</label>
-          <div class="custom-file-upload">
-            <input
-              type="file"
-              id="image"
-              @change="handleImageUpload"
-              accept="image/*"
-              class="custom-file-input"
-              required
-            />
-            <span class="file-upload-text">Choose Image</span>
+          <div class="form-group">
+            <label for="image" class="form-label">Image</label>
+            <div class="custom-file-upload">
+              <label for="image" class="file-upload-text">Choose Image</label>
+              <input
+                type="file"
+                id="image"
+                @change="handleImageUpload"
+                accept="image/*"
+                class="custom-file-input"
+                required
+              />
+            </div>
           </div>
         </div>
 
-        <!-- Description Field -->
         <div class="form-group">
           <label for="description" class="form-label">Description</label>
           <textarea
@@ -64,7 +56,6 @@
           ></textarea>
         </div>
 
-        <!-- Submit Button -->
         <div class="form-group">
           <button type="submit" class="submit-button">Add Animal</button>
         </div>
@@ -98,15 +89,62 @@ export default {
     handleImageUpload(event) {
       const file = event.target.files[0];
       if (file) {
-        this.animal.image = URL.createObjectURL(file); // Store the image URL temporarily
+        this.animal.image = file;
       }
     },
-    submitForm() {
-      // Perform your form submission logic here, such as sending data to an API
-      console.log(this.animal);
-      // You can reset the form fields after submission if needed
-      this.animal = { name: "", type: "", image: null, description: "" };
-    },
+async submitForm() {
+  if (!this.animal.name || !this.animal.type || !this.animal.image || !this.animal.description) {
+    alert("All fields are required.");
+    return;
+  }
+
+  try {
+    const imageFormData = new FormData();
+    imageFormData.append("image", this.animal.image);
+
+    const uploadResponse = await fetch("http://localhost:3000/animal/image", {
+      method: "POST",
+      credentials: "include",
+      body: imageFormData,
+    });
+
+    if (!uploadResponse.ok) {
+      throw new Error("Failed to upload image");
+    }
+
+    const { imageUrl } = await uploadResponse.json();
+
+    const animalData = {
+      name: this.animal.name,
+      type: this.animal.type,
+      description: this.animal.description,
+      image: imageUrl,
+    };
+
+    const response = await fetch("http://localhost:3000/animal", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(animalData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to add animal");
+    }
+
+    const data = await response.json();
+    console.log("Animal added successfully:", data);
+
+    this.animal = { name: "", type: "", image: null, description: "" };
+    alert("Animal added successfully!");
+  } catch (error) {
+    console.error("Error adding animal:", error);
+    alert("Failed to add animal.");
+  }
+}
+,
   },
 };
 </script>
@@ -125,9 +163,8 @@ export default {
   width: 90%;
   max-width: 600px;
   padding: 40px;
-  background-color: #f9f9f9;
+  background-color: white;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .form-title {
@@ -208,6 +245,7 @@ textarea.form-input {
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-bottom: 50px;
 }
 
 .submit-button:hover {
