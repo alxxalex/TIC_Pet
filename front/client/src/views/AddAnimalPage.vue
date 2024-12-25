@@ -1,5 +1,8 @@
 <template>
   <div class="add-animal-container">
+    <div v-if="isLoading">
+        <SpinnerIcon/>
+    </div>
     <NavBar />
     <div class="form-container">
       <h1 class="form-title">Add New Animal</h1>
@@ -55,7 +58,7 @@
             required
           ></textarea>
         </div>
-
+        
         <div class="form-group">
           <button type="submit" class="submit-button">Add Animal</button>
         </div>
@@ -68,12 +71,15 @@
 <script>
 import NavBar from "../components/NavBar.vue";
 import FooterSection from "../components/FooterSection.vue";
+import SpinnerIcon from "../components/SpinnerIcon.vue";
+import Swal from "sweetalert2";
 
 export default {
   name: "AddAnimalPage",
   components: {
     NavBar,
     FooterSection,
+    SpinnerIcon,
   },
   data() {
     return {
@@ -83,6 +89,7 @@ export default {
         image: null,
         description: "",
       },
+      isLoading : false
     };
   },
   methods: {
@@ -94,10 +101,16 @@ export default {
     },
 async submitForm() {
   if (!this.animal.name || !this.animal.type || !this.animal.image || !this.animal.description) {
-    alert("All fields are required.");
+    Swal.fire({
+    position: "center",
+    icon: "error",
+    title: "All fields are required",
+    showConfirmButton: false,
+    timer: 1500
+    });
     return;
   }
-
+    this.isLoading = true;
   try {
     const imageFormData = new FormData();
     imageFormData.append("image", this.animal.image);
@@ -136,12 +149,31 @@ async submitForm() {
 
     const data = await response.json();
     console.log("Animal added successfully:", data);
+    this.isLoading = false;
 
-    this.animal = { name: "", type: "", image: null, description: "" };
-    alert("Animal added successfully!");
+    Swal.fire({
+    position: "center",
+    icon: "success",
+    title: "The animal has been added",
+    showConfirmButton: false,
+    timer: 1500
+    })
+
+    setTimeout(() => {
+    this.$router.push("/gallery");
+    }, 1500);
+    
+    // this.animal = { name: "", type: "", image: null, description: "" };
+
   } catch (error) {
     console.error("Error adding animal:", error);
-    alert("Failed to add animal.");
+    Swal.fire({
+    position: "center",
+    icon: "error",
+    title: "Failed to add animal",
+    showConfirmButton: false,
+    timer: 1500
+    });
   }
 }
 ,
@@ -245,7 +277,7 @@ textarea.form-input {
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-bottom: 50px;
+  margin-bottom: 60px;
 }
 
 .submit-button:hover {
