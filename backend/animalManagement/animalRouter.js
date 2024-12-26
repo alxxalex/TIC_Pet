@@ -9,5 +9,6 @@ const upload = multer({ storage: multer.memoryStorage() });
 router.post('/animal',validateToken, validate, animalService.addAnimal);
 router.get('/animal',validateToken, validate, animalService.getAnimals);
 router.post('/animal/image',upload.single("image"),validateToken,animalService.uploadAnimalImage);
+router.delete('/animal/:id',validateToken, animalService.deleteAnimal);
 
 module.exports = router

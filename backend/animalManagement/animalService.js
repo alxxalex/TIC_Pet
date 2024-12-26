@@ -79,8 +79,34 @@ const uploadAnimalImage = async (req, res) => {
     }
   };
 
+  const deleteAnimal = async (req, res) => {
+    const { id } = req.params;
+  
+    if (!id) {
+      return res.status(400).json({ message: "Animal ID is required." });
+    }
+  
+    try {
+      const animalsCollection = db.collection('animals');
+      const docRef = animalsCollection.doc(id);
+  
+      const doc = await docRef.get();
+  
+      if (!doc.exists) {
+        return res.status(404).json({ message: "Animal not found." });
+      }
+  
+      await docRef.delete();
+      return res.status(200).json({ message: "Animal deleted successfully." });
+    } catch (error) {
+      console.error("Error deleting animal:", error);
+      return res.status(500).json({ message: "An error occurred while deleting the animal." });
+    }
+  };
+
 module.exports = {
   getAnimals,
   addAnimal,
-  uploadAnimalImage
+  uploadAnimalImage,
+  deleteAnimal
 };

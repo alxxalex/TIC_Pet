@@ -1,24 +1,23 @@
 <template>
   <div class="gallery-container">
     <NavBar />
-      <div class="gallery-header">
-        <h1 class="gallery-title">Adoptable Animals</h1>
-        <router-link to="/addAnimal" class="add-animal-button"
-          >Add New Animal</router-link
-        >
-      </div>
-    <div v-if="animals.length > 0" >
+    <div v-if="isLoading">
+      <SpinnerIcon />
+    </div>
+    <div class="gallery-header">
+      <h1 class="gallery-title">Adoptable Animals</h1>
+      <router-link to="/addAnimal" class="add-animal-button"
+        >Add New Animal</router-link
+      >
+    </div>
+    <div v-if="animals.length > 0">
       <div class="gallery-grid">
         <div v-for="animal in animals" :key="animal.id" class="animal-card">
-          <img
-            :src= "animal.image"
-            :alt="animal.name"
-            class="animal-image"
-          />
+          <img :src="animal.image" :alt="animal.name" class="animal-image" />
           <h2 class="animal-name">{{ animal.name }}</h2>
           <p class="animal-description">{{ animal.description }}</p>
           <button class="adopt-button" @click="adoptAnimal(animal.id)">
-            Adopt
+            Adopt me
           </button>
         </div>
       </div>
@@ -30,16 +29,20 @@
 <script>
 import NavBar from "../components/NavBar.vue";
 import FooterSection from "../components/FooterSection.vue";
+import SpinnerIcon from "../components/SpinnerIcon.vue";
+import Swal from "sweetalert2";
 
 export default {
   name: "GalleryPage",
   components: {
     NavBar,
     FooterSection,
+    SpinnerIcon,
   },
   data() {
     return {
       animals: [],
+      isLoading: false,
     };
   },
   mounted() {
@@ -47,6 +50,7 @@ export default {
   },
   methods: {
     async fetchAnimals() {
+      this.isLoading = true;
       try {
         const response = await fetch("http://localhost:3000/animal", {
           method: "GET",
@@ -58,12 +62,44 @@ export default {
         const data = await response.json();
         this.animals = data;
         console.log(this.animals);
+        this.isLoading = false;
       } catch (error) {
         console.error("Error fetching animals:", error);
       }
     },
-    adoptAnimal(animalId) {
-      console.log(`Adopt animal with ID: ${animalId}`);
+    async adoptAnimal(animalId) {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/animal/${animalId}`,
+          {
+            method: "DELETE",
+            credentials: "include",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Thank you for the adoption",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+
+        this.animals = this.animals.filter((animal) => animal.id !== animalId);
+      } catch (error) {
+        console.error("Error adopting animal:", error);
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "Failed to process the adoption",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
     },
   },
 };

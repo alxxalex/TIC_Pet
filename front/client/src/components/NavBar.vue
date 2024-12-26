@@ -13,6 +13,7 @@
         <router-link class="nav-link" to="/aboutus">
             <div>About Us</div>
         </router-link>
+        <i class="fa fa-sign-out sign-out" aria-hidden="true"></i>
     </nav>
   </header>
 </template>
@@ -78,5 +79,9 @@ export default {
 .nav-link:hover {
   color: #3f8cff;
   border-bottom: 2px solid #3f8cff;
+}
+
+.sign-out{
+  
 }
 </style>

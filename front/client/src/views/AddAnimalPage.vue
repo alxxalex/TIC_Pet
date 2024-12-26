@@ -1,68 +1,75 @@
 <template>
-  <div class="add-animal-container">
-    <div v-if="isLoading">
-        <SpinnerIcon/>
-    </div>
+  <div class="wrapper">
     <NavBar />
-    <div class="form-container">
-      <h1 class="form-title">Add New Animal</h1>
-      <form @submit.prevent="submitForm" class="animal-form">
-        <div class="form-group">
-          <label for="name" class="form-label">Name</label>
-          <input
-            type="text"
-            id="name"
-            v-model="animal.name"
-            class="form-input"
-            placeholder="Enter animal's name"
-            required
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="type" class="form-label">Type</label>
-          <select id="type" v-model="animal.type" class="form-input" required>
-            <option value="" disabled selected>Select animal type</option>
-            <option value="Dog">Dog</option>
-            <option value="Cat">Cat</option>
-            <option value="Parrot">Parrot</option>
-            <option value="Rabbit">Rabbit</option>
-          </select>
-        </div>
-
-        <div class="form-group">
+    <div class="add-animal-container">
+      <div v-if="isLoading">
+        <SpinnerIcon />
+      </div>
+      <div class="form-container">
+        <h1 class="form-title">Add New Animal</h1>
+        <form @submit.prevent="submitForm" class="animal-form">
           <div class="form-group">
-            <label for="image" class="form-label">Image</label>
-            <div class="custom-file-upload">
-              <label for="image" class="file-upload-text">Choose Image</label>
-              <input
-                type="file"
-                id="image"
-                @change="handleImageUpload"
-                accept="image/*"
-                class="custom-file-input"
-                required
-              />
+            <label for="name" class="form-label">Name</label>
+            <input
+              type="text"
+              id="name"
+              v-model="animal.name"
+              class="form-input"
+              placeholder="Enter animal's name"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="type" class="form-label">Type</label>
+            <select id="type" v-model="animal.type" class="form-input" required>
+              <option value="" disabled selected>Select animal type</option>
+              <option value="Dog">Dog</option>
+              <option value="Cat">Cat</option>
+              <option value="Parrot">Parrot</option>
+              <option value="Rabbit">Rabbit</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <div class="form-group">
+              <label for="image" class="form-label">Image</label>
+              <div class="custom-file-upload">
+                <label for="image" class="file-upload-text">Choose Image</label>
+                <input
+                  type="file"
+                  id="image"
+                  @change="handleImageUpload"
+                  accept="image/*"
+                  class="custom-file-input"
+                  required
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label for="description" class="form-label">Description</label>
-          <textarea
-            id="description"
-            v-model="animal.description"
-            class="form-input"
-            rows="4"
-            placeholder="Write a short description"
-            required
-          ></textarea>
-        </div>
-        
-        <div class="form-group">
-          <button type="submit" class="submit-button">Add Animal</button>
-        </div>
-      </form>
+          <div v-if="animal.image != null">
+            <label for="file-name" class="form-label">Chosen file name:</label>
+            <p id="file-name">{{ animal.image?.name }}</p>
+          </div>
+
+          <div class="form-group">
+            <label for="description" class="form-label">Description</label>
+            <textarea
+              id="description"
+              v-model="animal.description"
+              class="form-input"
+              rows="4"
+              placeholder="Write a short description"
+              required
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <button type="submit" class="submit-button">Add Animal</button>
+          </div>
+        </form>
+      </div>
     </div>
     <FooterSection />
   </div>
@@ -89,7 +96,7 @@ export default {
         image: null,
         description: "",
       },
-      isLoading : false
+      isLoading: false,
     };
   },
   methods: {
@@ -99,84 +106,90 @@ export default {
         this.animal.image = file;
       }
     },
-async submitForm() {
-  if (!this.animal.name || !this.animal.type || !this.animal.image || !this.animal.description) {
-    Swal.fire({
-    position: "center",
-    icon: "error",
-    title: "All fields are required",
-    showConfirmButton: false,
-    timer: 1500
-    });
-    return;
-  }
-    this.isLoading = true;
-  try {
-    const imageFormData = new FormData();
-    imageFormData.append("image", this.animal.image);
+    async submitForm() {
+      if (
+        !this.animal.name ||
+        !this.animal.type ||
+        !this.animal.image ||
+        !this.animal.description
+      ) {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "All fields are required",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        return;
+      }
+      this.isLoading = true;
+      try {
+        const imageFormData = new FormData();
+        imageFormData.append("image", this.animal.image);
 
-    const uploadResponse = await fetch("http://localhost:3000/animal/image", {
-      method: "POST",
-      credentials: "include",
-      body: imageFormData,
-    });
+        const uploadResponse = await fetch(
+          "http://localhost:3000/animal/image",
+          {
+            method: "POST",
+            credentials: "include",
+            body: imageFormData,
+          }
+        );
 
-    if (!uploadResponse.ok) {
-      throw new Error("Failed to upload image");
-    }
+        if (!uploadResponse.ok) {
+          throw new Error("Failed to upload image");
+        }
 
-    const { imageUrl } = await uploadResponse.json();
+        const { imageUrl } = await uploadResponse.json();
 
-    const animalData = {
-      name: this.animal.name,
-      type: this.animal.type,
-      description: this.animal.description,
-      image: imageUrl,
-    };
+        const animalData = {
+          name: this.animal.name,
+          type: this.animal.type,
+          description: this.animal.description,
+          image: imageUrl,
+        };
 
-    const response = await fetch("http://localhost:3000/animal", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(animalData),
-    });
+        const response = await fetch("http://localhost:3000/animal", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(animalData),
+        });
 
-    if (!response.ok) {
-      throw new Error("Failed to add animal");
-    }
+        if (!response.ok) {
+          throw new Error("Failed to add animal");
+        }
 
-    const data = await response.json();
-    console.log("Animal added successfully:", data);
-    this.isLoading = false;
+        const data = await response.json();
+        console.log("Animal added successfully:", data);
+        this.isLoading = false;
 
-    Swal.fire({
-    position: "center",
-    icon: "success",
-    title: "The animal has been added",
-    showConfirmButton: false,
-    timer: 1500
-    })
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "The animal has been added",
+          showConfirmButton: false,
+          timer: 1500,
+        });
 
-    setTimeout(() => {
-    this.$router.push("/gallery");
-    }, 1500);
-    
-    // this.animal = { name: "", type: "", image: null, description: "" };
+        setTimeout(() => {
+          this.$router.push("/gallery");
+        }, 1500);
 
-  } catch (error) {
-    console.error("Error adding animal:", error);
-    Swal.fire({
-    position: "center",
-    icon: "error",
-    title: "Failed to add animal",
-    showConfirmButton: false,
-    timer: 1500
-    });
-  }
-}
-,
+        // this.animal = { name: "", type: "", image: null, description: "" };
+      } catch (error) {
+        console.error("Error adding animal:", error);
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "Failed to add animal",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    },
   },
 };
 </script>
@@ -186,7 +199,6 @@ async submitForm() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px 0;
   background-color: white;
   min-height: 100vh;
 }
@@ -194,7 +206,7 @@ async submitForm() {
 .form-container {
   width: 90%;
   max-width: 600px;
-  padding: 40px;
+  padding-top: 40px;
   background-color: white;
   border-radius: 10px;
 }
@@ -277,7 +289,6 @@ textarea.form-input {
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-bottom: 60px;
 }
 
 .submit-button:hover {
