@@ -13,14 +13,46 @@
         <router-link class="nav-link" to="/aboutus">
             <div>About Us</div>
         </router-link>
-        <i class="fa fa-sign-out sign-out" aria-hidden="true"></i>
+        <div @click="logout">
+          <i class="fa fa-sign-out nav-link" aria-hidden="true" ></i>
+        </div>
     </nav>
   </header>
 </template>
 
 <script>
+import Swal from "sweetalert2";
+
 export default {
   name: "NavBar",
+  methods: {
+    async logout(){
+      console.log('asadsadsadsa');
+      const response = await fetch(
+          "http://localhost:3000/logout",
+          {
+            method: "POST",
+            credentials: "include",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "You succesfully logged out",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+
+        setTimeout(() => {
+          this.$router.push("/");
+        }, 1500);
+    }
+  }
 };
 </script>
 
@@ -81,7 +113,8 @@ export default {
   border-bottom: 2px solid #3f8cff;
 }
 
-.sign-out{
-  
-}
+/* .sign-out{
+  font-size: 30px;
+  margin-right: 15px;
+} */
 </style>

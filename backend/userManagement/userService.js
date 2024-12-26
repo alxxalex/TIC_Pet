@@ -90,9 +90,23 @@ const isEmailUsed = async (email) => {
       throw error; 
     }
     
-  }
+}
+
+const logoutUser = async (req, res) => {
+    try {
+        res.clearCookie('jwtToken', {
+            httpOnly: true, 
+            sameSite: 'strict', 
+        });
+        res.status(200).send({ message: 'Logout successful' });
+    } catch (error) {
+        console.error('Error during logout:', error);
+        res.status(500).send({ message: 'An error occurred during logout' });
+    }
+};
 
 module.exports = {
     registerUser,
     loginUser,
+    logoutUser
 }
