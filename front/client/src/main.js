@@ -4,6 +4,7 @@ import { createVuetify } from 'vuetify';
 import { VTextField, VForm, VSheet,VBtn,VRow,VImg,VAlert } from 'vuetify/components';
 import '@fortawesome/fontawesome-free/css/all.css';
 import '@fortawesome/fontawesome-free/js/all.js';
+import store from './store/store.js';
 import App from './App.vue'
 
 const vuetify = createVuetify({
@@ -21,4 +22,5 @@ const vuetify = createVuetify({
 createApp(App)
 .use(router)
 .use(vuetify)
+.use(store)
 .mount('#app')

@@ -52,6 +52,8 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
 export default {
   name:"SignupForm",
   data: () => ({
@@ -60,6 +62,7 @@ export default {
     errorMessage: ''
   }),
     methods: {
+    ...mapMutations(['setUserRole']),
     async submitForm() {
       console.log('Email:', this.email);
       console.log('Password:', this.password);
@@ -83,6 +86,7 @@ export default {
 
         if (response.ok) {
           console.log('Signup successful!', data);
+          this.$store.commit('setUserRole', data.role);
           this.$router.push('/home');
         }else {
           console.error('Signup failed:', data.errors[0].msg);

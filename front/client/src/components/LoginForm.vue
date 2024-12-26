@@ -53,6 +53,8 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
 export default {
   name:"LoginForm",
   data: () => ({
@@ -61,6 +63,7 @@ export default {
     errorMessage: ''
   }), 
   methods: {
+    ...mapMutations(['setUserRole']),
     async submitForm() {
       console.log('Email:', this.email);
       console.log('Password:', this.password);
@@ -84,6 +87,7 @@ export default {
 
         if (response.ok) {
           console.log('Login successful!', data);
+          this.$store.commit('setUserRole', data.role);
           this.$router.push('/home');
         }else if(response.status == 401){
           this.errorMessage = "Incorrect credentials";

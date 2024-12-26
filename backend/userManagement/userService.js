@@ -6,10 +6,17 @@ const registerUser = async (req, res) => {
     const { email, password } = req.body
     const newUser = {
         email: email,
-        password: password
+        password: password,
+        role: ""
     }
     try {
         if(! await isEmailUsed(email)){
+            if (email.endsWith('@pet.com')) {
+                newUser.role = 'admin';
+            } else {
+                newUser.role = 'user';
+            }
+
             const addedUser = await db.collection('users').add(newUser)
 
             const userDoc = await addedUser.get()
@@ -48,7 +55,8 @@ const loginUser = async (req, res) => {
 
     const userToAuthenticate = {
         email: email,
-        password: password
+        password: password,
+        role: ""
     }
 
     let auth = false
@@ -59,10 +67,14 @@ const loginUser = async (req, res) => {
         console.log('A user matching the email address has been found.')
         const userData = element.data()
 
-        if (userData.password === userToAuthenticate.password) auth = true
+        if (userData.password === userToAuthenticate.password){
+             auth = true;
+             userToAuthenticate.role = userData.role;
+        }
     });
 
     if (auth) {
+
         const token = jwt.sign(
             { email: email},
             'alex',
@@ -72,9 +84,10 @@ const loginUser = async (req, res) => {
         res.cookie('jwtToken', token, {
             httpOnly: true,
         });
-        res.status(200).send({ email: email})
+        console.log(userToAuthenticate);
+        res.status(200).send({ email: email,role: userToAuthenticate.role})
     } else {
-        res.status(401).send({ email: email})
+        res.status(401).send({ email: email,role: userToAuthenticate.role})
     }
 }
 

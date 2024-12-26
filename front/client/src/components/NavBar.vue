@@ -27,7 +27,6 @@ export default {
   name: "NavBar",
   methods: {
     async logout(){
-      console.log('asadsadsadsa');
       const response = await fetch(
           "http://localhost:3000/logout",
           {

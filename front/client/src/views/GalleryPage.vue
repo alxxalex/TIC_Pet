@@ -6,9 +6,9 @@
     </div>
     <div class="gallery-header">
       <h1 class="gallery-title">Adoptable Animals</h1>
-      <router-link to="/addAnimal" class="add-animal-button"
-        >Add New Animal</router-link
-      >
+      <router-link to="/addAnimal" class="add-animal-button" v-if="isAdmin">
+        Add New Animal
+      </router-link>
     </div>
     <div v-if="animals.length > 0">
       <div class="gallery-grid">
@@ -31,6 +31,7 @@ import NavBar from "../components/NavBar.vue";
 import FooterSection from "../components/FooterSection.vue";
 import SpinnerIcon from "../components/SpinnerIcon.vue";
 import Swal from "sweetalert2";
+import { mapGetters } from 'vuex';
 
 export default {
   name: "GalleryPage",
@@ -44,6 +45,15 @@ export default {
       animals: [],
       isLoading: false,
     };
+  },
+  computed: {
+    ...mapGetters(['getUserRole']),
+    isAdmin() {
+      return this.getUserRole === 'admin';
+    },
+    isUser() {
+      return this.getUserRole === 'user';
+    },
   },
   mounted() {
     this.fetchAnimals();
