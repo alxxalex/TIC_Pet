@@ -13,10 +13,13 @@
     <div v-if="animals.length > 0">
       <div class="gallery-grid">
         <div v-for="animal in animals" :key="animal.id" class="animal-card">
+          <div @click="editAnimal(animal.id)">
+            <i class="fa-solid fa-pencil edit"></i>
+          </div>
           <img :src="animal.image" :alt="animal.name" class="animal-image" />
           <h2 class="animal-name">{{ animal.name }}</h2>
           <p class="animal-description">{{ animal.description }}</p>
-          <button class="adopt-button" @click="adoptAnimal(animal.id)">
+          <button class="adopt-button" @click="adoptAnimal(animal.id,animal.name,animal.image)">
             Adopt me
           </button>
         </div>
@@ -77,39 +80,55 @@ export default {
         console.error("Error fetching animals:", error);
       }
     },
-    async adoptAnimal(animalId) {
-      try {
-        const response = await fetch(
-          `http://localhost:3000/animal/${animalId}`,
-          {
-            method: "DELETE",
-            credentials: "include",
+    async adoptAnimal(animalId,animalName,animalImage) {
+      
+      const { isConfirmed } = await Swal.fire({
+        title: `${animalName}`,
+        text: `Are you sure you want to adopt ${animalName}?`,
+        imageUrl: animalImage,
+        imageWidth: 250,
+        imageHeight: 200,
+        showCancelButton: true,
+        confirmButtonText: 'Yes, adopt!',
+        cancelButtonText: 'No, cancel',
+      });
+      if(isConfirmed){
+        try {
+          const response = await fetch(
+            `http://localhost:3000/animal/${animalId}`,
+            {
+              method: "DELETE",
+              credentials: "include",
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
           }
-        );
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Thank you for the adoption",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+
+          this.animals = this.animals.filter((animal) => animal.id !== animalId);
+        } catch (error) {
+          console.error("Error adopting animal:", error);
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "Failed to process the adoption",
+            showConfirmButton: false,
+            timer: 1500,
+          });
         }
-
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          title: "Thank you for the adoption",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-
-        this.animals = this.animals.filter((animal) => animal.id !== animalId);
-      } catch (error) {
-        console.error("Error adopting animal:", error);
-        Swal.fire({
-          position: "center",
-          icon: "error",
-          title: "Failed to process the adoption",
-          showConfirmButton: false,
-          timer: 1500,
-        });
       }
+    },
+    async editAnimal(animalId) {
+      this.$router.push(`/animal/${animalId}`);
     },
   },
 };
@@ -160,7 +179,7 @@ export default {
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
   padding: 20px 10%;
 }
@@ -215,5 +234,18 @@ export default {
 
 .adopt-button:hover {
   background-color: #2c66c0;
+}
+
+.edit{
+  font-size: 22px;
+  position:relative;
+  left: 48%;
+  bottom: 5px;
+  cursor: pointer;
+}
+
+.edit:hover {
+  color: #29313b;
+  transform: scale(1.1); 
 }
 </style>

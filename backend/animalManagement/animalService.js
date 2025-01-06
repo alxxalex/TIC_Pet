@@ -104,9 +104,64 @@ const uploadAnimalImage = async (req, res) => {
     }
   };
 
+  const getAnimalById = async (req, res) => {
+    const { id } = req.params; 
+    try {
+        const animalRef = db.collection('animals').doc(id);
+        const animalDoc = await animalRef.get();
+
+        if (!animalDoc.exists) {
+            return res.status(404).send({ error: "Animal not found" });
+        }
+
+        const animalData = animalDoc.data();
+        return res.status(200).json({ id: animalDoc.id, ...animalData });
+    } catch (error) {
+        console.error("Error fetching animal:", error);
+        res.status(500).send({ error: "An error occurred while fetching the animal" });
+    }
+};
+
+const updateAnimal = async (req, res) => {
+  try {
+    const { id, name, type, image, description } = req.body;
+
+    if (!id || !name || !type || !image || !description) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    const animalsCollection = db.collection('animals');
+
+    const docRef = animalsCollection.doc(id);
+    const docSnapshot = await docRef.get();
+
+    if (!docSnapshot.exists) {
+      return res.status(404).json({ message: "Animal not found." });
+    }
+
+    const updatedAnimal = {
+      name,
+      type,
+      image,
+      description,
+      updatedAt: new Date().toISOString(),
+    };
+
+    await docRef.update(updatedAnimal);
+
+    return res.status(200).json({ id, ...updatedAnimal });
+  } catch (error) {
+    console.error("Error updating animal:", error);
+    return res.status(500).json({ message: "An error occurred while updating the animal." });
+  }
+};
+
+
 module.exports = {
   getAnimals,
   addAnimal,
   uploadAnimalImage,
-  deleteAnimal
+  deleteAnimal,
+  getAnimalById,
+  updateAnimal
 };

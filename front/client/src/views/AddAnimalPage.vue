@@ -31,7 +31,6 @@
             </select>
           </div>
 
-          <div class="form-group">
             <div class="form-group">
               <label for="image" class="form-label">Image</label>
               <div class="custom-file-upload">
@@ -45,8 +44,7 @@
                   required
                 />
               </div>
-            </div>
-          </div>
+          `</div>
 
           <div v-if="animal.image != null">
             <label for="file-name" class="form-label">Chosen file name:</label>
