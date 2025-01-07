@@ -27,7 +27,7 @@ const registerUser = async (req, res) => {
 
             const token = jwt.sign(
                 { email: email},
-                'alex',
+                'YWxleGFuZHJ1',
                 { expiresIn: '24h' }
             );
     
@@ -77,7 +77,7 @@ const loginUser = async (req, res) => {
 
         const token = jwt.sign(
             { email: email},
-            'alex',
+            'YWxleGFuZHJ1',
             { expiresIn: '24h' }
         );
 

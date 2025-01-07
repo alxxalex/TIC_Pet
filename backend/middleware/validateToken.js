@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 const validateToken = (req, res, next) => {
     try {
-        const user = jwt.verify(req.cookies.jwtToken, "alex")
+        const user = jwt.verify(req.cookies.jwtToken, "YWxleGFuZHJ1")
         req.user = user;
         next();
     } catch (err) {
