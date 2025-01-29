@@ -63,7 +63,7 @@ const uploadAnimalImage = async (req, res) => {
         },
       });
   
-      const expiresInDays = 7;
+      const expiresInDays = 365;
       const expirationDate = new Date();
       expirationDate.setDate(expirationDate.getDate() + expiresInDays);
   

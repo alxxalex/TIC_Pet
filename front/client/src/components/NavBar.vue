@@ -27,29 +27,40 @@ export default {
   name: "NavBar",
   methods: {
     async logout(){
-      const response = await fetch(
-          "http://localhost:3000/logout",
-          {
-            method: "POST",
-            credentials: "include",
+      const { isConfirmed } = await Swal.fire({
+        title: `Are you sure you want to logout?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No!',
+      });
+      if(isConfirmed){
+        const response = await fetch(
+            "http://localhost:3000/logout",
+            {
+              method: "POST",
+              credentials: "include",
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
           }
-        );
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+          this.$store.commit('clearAuthState');
 
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          title: "You succesfully logged out",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "You succesfully logged out",
+            showConfirmButton: false,
+            timer: 1500,
+          });
 
-        setTimeout(() => {
-          this.$router.push("/");
-        }, 1500);
+          setTimeout(() => {
+            this.$router.push("/");
+          }, 1500);
+      }
     }
   }
 };

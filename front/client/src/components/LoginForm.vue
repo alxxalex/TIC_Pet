@@ -61,12 +61,13 @@ export default {
     email: '',
     password: '',
     errorMessage: ''
-  }), 
+  }),
   methods: {
     ...mapMutations(['setUserRole']),
     async submitForm() {
       console.log('Email:', this.email);
       console.log('Password:', this.password);
+       
       try {
         const credentials = {
           email: this.email,
@@ -88,6 +89,8 @@ export default {
         if (response.ok) {
           console.log('Login successful!', data);
           this.$store.commit('setUserRole', data.role);
+          this.$store.commit('setAuthState',true);
+          console.log(this.$store);
           this.$router.push('/home');
         }else if(response.status == 401){
           this.errorMessage = "Incorrect credentials";

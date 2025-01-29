@@ -13,7 +13,7 @@
     <div v-if="animals.length > 0">
       <div class="gallery-grid">
         <div v-for="animal in animals" :key="animal.id" class="animal-card">
-          <div @click="editAnimal(animal.id)">
+          <div @click="editAnimal(animal.id)" v-if="isAdmin">
             <i class="fa-solid fa-pencil edit"></i>
           </div>
           <img :src="animal.image" :alt="animal.name" class="animal-image" />

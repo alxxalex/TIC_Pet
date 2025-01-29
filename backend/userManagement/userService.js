@@ -118,9 +118,8 @@ const logoutUser = async (req, res) => {
     }
 };
 
-
 module.exports = {
     registerUser,
     loginUser,
-    logoutUser
+    logoutUser,
 }
